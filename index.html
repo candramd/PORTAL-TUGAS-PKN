@@ -202,13 +202,25 @@
                             </li>
                             <li class="flex items-start gap-2.5">
                                 <span class="w-5 h-5 rounded-full bg-navy-900 text-white text-xs flex items-center justify-center shrink-0 mt-0.5 font-bold">2</span>
-                                <span>Pastikan mengumpulkan tugas <strong>sebelum batas waktu (deadline)</strong> yang ditentukan guru agar tidak ditolak sistem[cite: 4].</span>
+                                <span>Pastikan mengumpulkan tugas <strong>sebelum batas waktu (deadline)</strong> yang ditentukan guru[cite: 4].</span>
                             </li>
                             <li class="flex items-start gap-2.5">
                                 <span class="w-5 h-5 rounded-full bg-navy-900 text-white text-xs flex items-center justify-center shrink-0 mt-0.5 font-bold">3</span>
-                                <span>Simpan kode bukti pengiriman untuk memantau nilai Anda.</span>
+                                <span>Setelah kirim, siswa dapat mengirimkan **Kode Bukti** atau menyalin data ke guru jika diperlukan.</span>
                             </li>
                         </ul>
+                    </div>
+
+                    <!-- KOTAK IMPORT / EKSPOR TOKEN UNTUK HP SISWA KE LAPTOP GURU -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-3">
+                        <h3 class="font-bold text-sm text-navy-900 flex items-center gap-2">
+                            <i class="fa-solid fa-share-nodes text-gold-600"></i> Kirim Tugas Lewat Kode Sesi
+                        </h3>
+                        <p class="text-xs text-slate-600">Jika tugas tidak langsung masuk, salin teks kode di bawah ini lalu kirimkan ke WhatsApp Guru:</p>
+                        <textarea id="student-export-token-box" readonly rows="3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-mono text-slate-700 select-all" placeholder="Belum ada tugas dikirim..."></textarea>
+                        <button type="button" onclick="copyStudentToken()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-copy"></i> Salin Kode Tugas Saya
+                        </button>
                     </div>
 
                     <div class="bg-gradient-to-br from-navy-900 to-navy-800 rounded-2xl p-6 text-white shadow-md border border-gold-500/20">
@@ -418,9 +430,9 @@
                         <p class="text-xs sm:text-sm text-slate-500">SMP Negeri 3 Sungai Betung &bull; Manajemen 21 Siswa[cite: 4], Koreksi Tugas &amp; Rekap Nilai</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2.5">
-                        <button onclick="refreshAllUI(); showToast('Data berhasil disinkronkan dari HP siswa!', 'success');" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition flex items-center gap-2">
-                            <i class="fa-solid fa-rotate"></i>
-                            <span>Sinkronkan Tugas Masuk</span>
+                        <button onclick="openImportTokenModal()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-file-import"></i>
+                            <span>Impor Kode Tugas Siswa</span>
                         </button>
                         <button onclick="openAddTaskModal()" class="px-4 py-2.5 bg-navy-900 hover:bg-navy-800 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition flex items-center gap-2">
                             <i class="fa-solid fa-plus"></i>
@@ -654,21 +666,39 @@
                     <i class="fa-solid fa-check"></i>
                 </div>
                 <h3 class="text-lg font-bold text-navy-900">Tugas Berhasil Dikirim!</h3>
-                <p class="text-xs text-slate-500">Simpan kode bukti pengiriman tugas Anda di bawah ini.</p>
+                <p class="text-xs text-slate-500">Salin kode token di bawah ini jika ingin langsung mengirimkannya ke WhatsApp guru.</p>
             </div>
             <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2 text-xs">
                 <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-200">
                     <span class="text-slate-500 font-medium">Kode Bukti:</span>
                     <strong id="receipt-code" class="font-mono text-base text-navy-900 bg-gold-500/20 px-2 py-0.5 rounded">-</strong>
                 </div>
-                <div class="flex justify-between"><span class="text-slate-500">Nama Siswa:</span> <span id="receipt-name" class="font-semibold text-slate-800">-</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">NISN / ID:</span> <span id="receipt-nisn" class="font-mono font-semibold text-slate-800">-</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Absen No:</span> <span id="receipt-class" class="font-semibold text-slate-800">-</span></div>
-                <div><span class="text-slate-500 block">Judul Tugas:</span> <span id="receipt-task" class="font-semibold text-slate-800">-</span></div>
+                <div><span class="text-slate-500 block mb-1">Token Sesi Pengiriman:</span> <textarea id="modal-token-string" readonly rows="2" class="w-full p-2 bg-white border border-slate-200 rounded-lg text-[9px] font-mono text-slate-700 select-all"></textarea></div>
             </div>
             <div class="flex gap-3">
                 <button onclick="closeModal('receipt-modal')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition">Tutup</button>
                 <button onclick="closeModal('receipt-modal'); switchTab('daftar');" class="flex-1 py-2.5 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-xl text-xs transition">Cek Status Tugas</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL IMPOR TOKEN TUGAS SISWA (UNTUK GURU) -->
+    <div id="import-token-modal" class="fixed inset-0 bg-navy-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 fade-in">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 class="font-bold text-base text-navy-900"><i class="fa-solid fa-file-import text-blue-600 mr-2"></i> Impor Token Tugas Siswa</h3>
+                <button onclick="closeModal('import-token-modal')" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-3 text-xs text-slate-600">
+                <p>Jika siswa mengirimkan kode token tugas melalui WhatsApp atau pesan, tempel (*paste*) kode tersebut di bawah ini untuk memasukkannya secara permanen ke rekap nilai laptop Anda:</p>
+                <textarea id="teacher-import-token-input" rows="5" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs outline-none focus:ring-2 focus:ring-navy-800" placeholder="Tempel kode token siswa di sini..."></textarea>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="executeImportStudentToken()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition shadow">
+                    Masukkan ke Rekap Nilai
+                </button>
+                <button type="button" onclick="closeModal('import-token-modal')" class="py-3 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition">Batal</button>
             </div>
         </div>
     </div>
@@ -856,7 +886,7 @@
 
     <!-- SCRIPT UTAMA APLIKASI -->
     <script>
-        // 21 SISWA LENGKAP SESUAI BERKAS ABSENSI KELAS 9 SMPN 3 SUNGAI BETUNG
+        // 21 SISWA LENGKAP SESUAI BERKAS ABSENSI KELAS 9 SMPN 3 SUNGAI BETUNG[cite: 4]
         const DEFAULT_STUDENT_ROSTER = [
             { absen: 1, nisn: "0103198229", nama: "ARDIYANSHAH AFRA", jk: "L" },
             { absen: 2, nisn: "0117033828", nama: "AREL MEILTU TEAN", jk: "L" },
@@ -930,8 +960,6 @@
         let activeStudent = null;
         let studentRoster = JSON.parse(localStorage.getItem('smpn3_student_roster_v9')) || DEFAULT_STUDENT_ROSTER;
         let assignmentsList = JSON.parse(localStorage.getItem('smpn3_assignments_v9')) || DEFAULT_ASSIGNMENTS;
-        
-        // PENGATURAN PENYIMPANAN TERPUSAT (MENYATUKAN SEMUA KIRIMAN DARI BERBAGAI HP)
         let submissionsList = JSON.parse(localStorage.getItem('smpn3_submissions_v9')) || DEFAULT_SUBMISSIONS;
         
         let selectedFilePayload = null;
@@ -939,7 +967,6 @@
         window.teacherAuthenticated = false;
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Sinkronisasi otomatis saat halaman dimuat
             syncDataFromStorage();
             populateGateStudentDropdown();
             checkExistingSession();
@@ -1110,7 +1137,6 @@
                 return;
             }
 
-            // Setiap kali masuk ke tab daftar atau guru, sinkronkan data terbaru
             syncDataFromStorage();
             refreshAllUI();
 
@@ -1323,9 +1349,6 @@
                 return;
             }
 
-            // Tarik data terbaru agar tidak menimpa data siswa lain yang mengumpulkan bersamaan
-            syncDataFromStorage();
-
             const receiptCode = `PPKN-${Math.floor(1000 + Math.random() * 9000)}`;
             const newSub = {
                 id: 'sub-' + Date.now() + '-' + activeStudent.absen,
@@ -1346,18 +1369,17 @@
                 teacherFeedback: ''
             };
 
-            // Hapus duplikat kiriman sebelumnya untuk tugas yang sama oleh siswa yang sama jika ada, lalu masukkan yang terbaru
+            // Masukkan ke array lokal siswa
             submissionsList = submissionsList.filter(s => !(Number(s.studentAbsen) === Number(activeStudent.absen) && s.assignmentTitle === assignmentTitle));
             submissionsList.unshift(newSub);
-            
             persistAllData();
-            refreshAllUI();
+
+            // Buat string token untuk memudahkan siswa kirim via WhatsApp ke guru
+            const tokenString = btoa(unescape(encodeURIComponent(JSON.stringify(newSub))));
+            document.getElementById('student-export-token-box').value = tokenString;
+            document.getElementById('modal-token-string').value = tokenString;
 
             document.getElementById('receipt-code').textContent = receiptCode;
-            document.getElementById('receipt-name').textContent = activeStudent.nama;
-            document.getElementById('receipt-nisn').textContent = activeStudent.nisn;
-            document.getElementById('receipt-class').textContent = `No. Absen ${activeStudent.absen}`;
-            document.getElementById('receipt-task').textContent = assignmentTitle;
             openModal('receipt-modal');
 
             document.getElementById('submission-form').reset();
@@ -1365,6 +1387,51 @@
             document.getElementById('file-label-text').textContent = "Klik untuk memilih file berkas";
             toggleSubmissionMethod();
         });
+
+        function copyStudentToken() {
+            const box = document.getElementById('student-export-token-box');
+            if (!box.value) {
+                showToast("Belum ada tugas yang dikirim!", "error");
+                return;
+            }
+            box.select();
+            document.execCommand('copy');
+            showToast("Kode token berhasil disalin! Kirimkan ke WhatsApp Guru.", "success");
+        }
+
+        // FITUR IMPOR TOKEN OLEH GURU DI LAPTOP
+        function openImportTokenModal() {
+            document.getElementById('teacher-import-token-input').value = "";
+            openModal('import-token-modal');
+        }
+
+        function executeImportStudentToken() {
+            const rawToken = document.getElementById('teacher-import-token-input').value.trim();
+            if (!rawToken) {
+                showToast("Tempel kode token siswa terlebih dahulu!", "error");
+                return;
+            }
+
+            try {
+                const jsonString = decodeURIComponent(escape(atob(rawToken)));
+                const importedSub = JSON.parse(jsonString);
+
+                if (!importedSub.id || !importedSub.studentAbsen || !importedSub.assignmentTitle) {
+                    throw new Error("Format token tidak valid");
+                }
+
+                syncDataFromStorage();
+                submissionsList = submissionsList.filter(s => !(Number(s.studentAbsen) === Number(importedSub.studentAbsen) && s.assignmentTitle === importedSub.assignmentTitle));
+                submissionsList.unshift(importedSub);
+                persistAllData();
+                refreshAllUI();
+
+                closeModal('import-token-modal');
+                showToast(`Sukses! Tugas dari ${importedSub.studentName} (Absen ${importedSub.studentAbsen}) berhasil masuk ke panel!`, "success");
+            } catch (e) {
+                showToast("Kode token salah atau rusak! Pastikan menyalin teks dengan benar.", "error");
+            }
+        }
 
         function renderActiveAssignmentsCards() {
             const container = document.getElementById('assignments-grid');
@@ -2145,7 +2212,7 @@
             syncDataFromStorage();
             const taskTitle = document.getElementById('roster-task-select').value;
             const headers = ["No Absen", "NISN", "Nama Lengkap", "L/P", "Judul Tugas", "Status Pengerjaan", "Nilai", "Catatan Guru"];
-            const rows = studentRoster.map(st => {
+            const rows = studentRoster.sort((a,b) => a.absen - b.absen).map(st => {
                 const sub = submissionsList.find(s => s.assignmentTitle === taskTitle && Number(s.studentAbsen) === Number(st.absen));
                 return [
                     st.absen,
@@ -2186,22 +2253,12 @@
             const toast = document.createElement('div');
             const bgClass = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-rose-600' : 'bg-navy-900');
             toast.className = `${bgClass} text-white px-4 py-3 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2.5 pointer-events-auto fade-in max-w-sm`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i><span>${message}</span>`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"><span>${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 300);
             }, 3500);
-        }
-
-        function formatDateIndo(dateStr) {
-            if (!dateStr) return '-';
-            try {
-                const d = new Date(dateStr);
-                return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-            } catch {
-                return dateStr;
-            }
         }
 
         function formatDateTimeIndo(isoStr) {
